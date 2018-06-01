@@ -6,6 +6,7 @@ This is an experimental for to test a few things.
 Changes:
 - Use shiny backend (ktye/duitdraw) instead of 9fans/go/draw
 	- It's go gettable, no need to manually install duitdraw
+- Implement Target assignments [issue 5](mjl-/duit#5)
 
 # duit - developer ui toolkit
 
