@@ -12,6 +12,7 @@ import (
 
 // Field is a single line text field. The cursor is always visible, and determines which part of the text is shown.
 type Field struct {
+	Target          **Field                              `json:"-"` // Reference to itself.
 	Text            string                               // Current text.
 	Placeholder     string                               // Text displayed in lighter color as example.
 	Disabled        bool                                 // If disabled, mouse and key input have no effect.
@@ -79,6 +80,10 @@ func (ui *Field) removeSelection() {
 
 func (ui *Field) Layout(dui *DUI, self *Kid, sizeAvail image.Point, force bool) {
 	dui.debugLayout(self)
+
+	if ui.Target != nil {
+		*ui.Target = ui
+	}
 
 	ui.size = image.Point{sizeAvail.X, ui.font(dui).Height + 2*ui.space(dui).Y}
 	self.R = rect(ui.size)

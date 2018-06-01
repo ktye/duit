@@ -30,7 +30,7 @@ func main() {
 	}
 
 	count := 0
-	counter := &duit.Label{Text: fmt.Sprintf("%d", count)}
+	var counter *duit.Label
 	tick := make(chan struct{}, 0)
 	go func() {
 		for {
@@ -39,6 +39,8 @@ func main() {
 		}
 	}()
 
+	// We cannot define the RadiobuttonGroup inside the main UI.
+	// It cannot be assigned to a Target, as it is just a slice.
 	radio1 := &duit.Radiobutton{
 		Selected: true,
 		Value:    1,
@@ -116,7 +118,7 @@ func main() {
 					Margin:  image.Pt(6, 4),
 					Kids: duit.NewKids(
 						&duit.Label{Text: "counter:"},
-						counter,
+						&duit.Label{Target: &counter, Text: fmt.Sprintf("%d", count)},
 						&duit.Button{
 							Text:     "button1",
 							Colorset: &dui.Primary,

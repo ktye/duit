@@ -8,6 +8,7 @@ import (
 
 // Radiobutton is typically part of a group of radiobuttons, with exactly one of them selected. Labels are not part of the radiobutton itself.
 type Radiobutton struct {
+	Target   **Radiobutton `json:"-"`
 	Selected bool
 	Disabled bool             // If set, cannot be selected.
 	Group    RadiobuttonGroup // Other radiobuttons as part of this group. If a radiobutton is selected, others in the group are unselected.
@@ -53,6 +54,10 @@ func (ui *Radiobutton) innerDim(dui *DUI) int {
 
 func (ui *Radiobutton) Layout(dui *DUI, self *Kid, sizeAvail image.Point, force bool) {
 	dui.debugLayout(self)
+
+	if ui.Target != nil {
+		*ui.Target = ui
+	}
 
 	hit := image.Point{0, 1}
 	size := pt(2*BorderSize + 7*dui.Display.DefaultFont.Height/10).Add(hit)

@@ -18,7 +18,8 @@ func main() {
 
 	// assign some UIs to variables, so we can reference
 	// and modify them in the button click handler.
-	status := &duit.Label{Text: "status: not logged in yet"}
+	var status *duit.Label
+
 	username := &duit.Field{}
 	password := &duit.Field{Password: true}
 	login := &duit.Button{
@@ -57,7 +58,7 @@ func main() {
 		Margin:  image.Pt(6, 4),     // space between kids in this box
 		// duit.NewKids is a convenience function turning UIs into Kids
 		Kids: duit.NewKids(
-			status,
+			&duit.Label{Target: &status, Text: "status: not logged in yet"},
 			&duit.Grid{
 				Columns: 2,
 				Padding: []duit.Space{

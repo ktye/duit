@@ -12,9 +12,10 @@ import (
 //	cmd-c, copy text
 //	\n, like button1 click, calls the Click function
 type Label struct {
-	Text  string           // Text to draw, wrapped at glyph boundary.
-	Font  *draw.Font       `json:"-"` // For drawing text.
-	Click func() (e Event) `json:"-"` // Called on button1 click.
+	Target **Label          `json:"-"`
+	Text   string           // Text to draw, wrapped at glyph boundary.
+	Font   *draw.Font       `json:"-"` // For drawing text.
+	Click  func() (e Event) `json:"-"` // Called on button1 click.
 
 	lines []string
 	size  image.Point
@@ -29,6 +30,10 @@ func (ui *Label) font(dui *DUI) *draw.Font {
 
 func (ui *Label) Layout(dui *DUI, self *Kid, sizeAvail image.Point, force bool) {
 	dui.debugLayout(self)
+
+	if ui.Target != nil {
+		*ui.Target = ui
+	}
 
 	font := ui.font(dui)
 	ui.lines = []string{}

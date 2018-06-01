@@ -17,16 +17,17 @@ func main() {
 	dui, err := duit.NewDUI("ex/alert", &duit.DUIOpts{Dimensions: "400x300"})
 	check(err, "new dui")
 
-	field := &duit.Field{
-		Text: "type an alert message here",
-	}
+	var field *duit.Field
 
 	dui.Top.UI = &duit.Box{
 		Padding: duit.SpaceXY(6, 4),
 		Margin:  image.Pt(6, 4),
 		Valign:  duit.ValignMiddle,
 		Kids: duit.NewKids(
-			field,
+			&duit.Field{
+				Target: &field,
+				Text:   "type an alert message here",
+			},
 			&duit.Button{
 				Text: "click me to create an alert",
 				Click: func() (e duit.Event) {
