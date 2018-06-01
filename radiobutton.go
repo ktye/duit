@@ -3,7 +3,7 @@ package duit
 import (
 	"image"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // Radiobutton is typically part of a group of radiobuttons, with exactly one of them selected. Labels are not part of the radiobutton itself.

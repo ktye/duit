@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 const (

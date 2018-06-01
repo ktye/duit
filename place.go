@@ -3,7 +3,7 @@ package duit
 import (
 	"image"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // Place contains other UIs it can position absolute, possibly on top of each other.

@@ -13,7 +13,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // SeekReaderAt is used as a source for edits. The seeker is used to determine file size, the readerAt for reading.

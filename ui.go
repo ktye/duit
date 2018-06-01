@@ -3,7 +3,7 @@ package duit
 import (
 	"image"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // UI is the interface implemented by a user interface element. For example Button, List, Grid, Scroll.

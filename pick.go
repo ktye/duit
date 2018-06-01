@@ -3,7 +3,7 @@ package duit
 import (
 	"image"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // Pick makes it possible to create responsive UI layouts. You must provide the function Pick that is called at layout with the available window space. It must return the current UI to show. You could return different layouts depending on the size of the window.

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"image"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // Kid holds a UI and its layout/draw state.

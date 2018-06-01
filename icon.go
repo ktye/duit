@@ -1,7 +1,7 @@
 package duit
 
 import (
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // Icon is a single codepoint in the given font. Typically for an "icon font" like fontawesome.

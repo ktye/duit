@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"9fans.net/go/draw"
+	draw "github.com/ktye/duitdraw"
 )
 
 // ReadImage decodes an image from f for use on display. The returned image is ready for use in an Image UI.
