@@ -1,6 +1,12 @@
 [![GoDoc](https://godoc.org/github.com/mjl-/duit?status.svg)](https://godoc.org/github.com/mjl-/duit)
 [![Build Status](https://travis-ci.org/mjl-/duit.svg?branch=master)](https://travis-ci.org/mjl-/duit)
 
+## Notes on the fork (ktye)
+This is an experimental for to test a few things.
+Changes:
+- Use shiny backend (ktye/duitdraw) instead of 9fans/go/draw
+	- It's go gettable, no need to manually install duitdraw
+
 # duit - developer ui toolkit
 
 WARNING: this library is work in progress. backwards incompatible changes will be made.
