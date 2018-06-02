@@ -891,6 +891,18 @@ func (ui *Edit) Mouse(dui *DUI, self *Kid, m draw.Mouse, origM draw.Mouse, orig 
 		self.Draw = Dirty
 		r.Consumed = true
 		return
+	} else if m.Buttons == Button3 {
+		if b, err := ui.Selection(); err == nil && len(b) > 0 {
+			ui.searchText(string(b), false)
+			self.Draw = Dirty
+			ui.ScrollCursor(dui)
+			// Howto warp the mouse to the selected text?
+			// This does not work and triggers multiple mouse events:
+			// p := ui.lastCursorPoint
+			// r.Warp = &p
+		}
+		r.Consumed = true
+		return
 	}
 	if m.Buttons == 0 && om.Buttons&(Button1|Button2|Button3) != 0 && ui.Click != nil {
 		e := ui.Click(om, mouseOffset())

@@ -7,6 +7,9 @@ Changes:
 - Use shiny backend (ktye/duitdraw) instead of 9fans/go/draw
 	- It's go gettable, no need to manually install duitdraw
 - Implement Target assignments mjl-/duit#9
+- Edit: search selected Text with Button3 mjl-/duit#10
+	- it scrolls the new selection into view
+	- TODO: how to warp the mouse to it?
 
 # duit - developer ui toolkit
 
