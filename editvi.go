@@ -436,6 +436,10 @@ func (ui *Edit) commandKey(dui *DUI, result *Result) (modified bool) {
 		cmd.Times(func() {
 			fr.TryGet()
 		})
+		ui.SetCursor(Cursor{ui.cursor.Cur, fr.Offset()})
+		b, _ := ui.Selection()
+		dui.WriteSnarf(b)
+		ui.SetCursor(Cursor{ui.cursor.Cur, ui.cursor.Cur})
 		ui.text.Replace(ui, &modified, Cursor{ui.cursor.Cur, fr.Offset()}, nil, false)
 	case 'X':
 		// backspace
