@@ -1,8 +1,8 @@
 package scene
 
 import (
-	"fmt"
 	"image"
+	"math"
 
 	"github.com/ktye/duit"
 	"github.com/ktye/duitdraw"
@@ -11,63 +11,72 @@ import (
 // This file implements the duit.UI interface for Scene.
 
 func (s *Scene) Layout(dui *duit.DUI, self *duit.Kid, sizeAvail image.Point, force bool) {
-	fmt.Println("Layout sizeAvail", sizeAvail)
 	return
 }
 
 func (s *Scene) Draw(dui *duit.DUI, self *duit.Kid, img *duitdraw.Image, orig image.Point, m duitdraw.Mouse, force bool) {
-	fmt.Println("Draw")
 	s.View.Width = float64(img.R.Dx())
 	s.View.Height = float64(img.R.Dy())
 	s.DrawScene(img, s.View)
 }
 
 func (s *Scene) Mouse(dui *duit.DUI, self *duit.Kid, m duitdraw.Mouse, origM duitdraw.Mouse, orig image.Point) (r duit.Result) {
-	fmt.Println("Mouse", m.Buttons)
-
-	// Mouse wheel zooms in and out.
-	// It moves the Eye position towards the Center.
-	// The amount is set to 5% of the distance.
-	if m.Buttons == 8 || m.Buttons == 16 {
-		d := s.View.Center.Sub(s.View.Eye).MulScalar(0.05)
-		if m.Buttons == 16 {
-			d = d.Negate()
-		}
-		s.View.Eye = s.View.Eye.Add(d)
-		r.Consumed = true
+	x, y := float64(m.Point.X), float64(m.Point.Y)
+	if m.Buttons == 1 {
+		s.View.MouseRotate(x, y, true)
+	} else if m.Buttons == 4 {
+		s.View.MousePan(x, y, true)
+	} else if m.Buttons == 8 {
+		s.View.Scroll -= 5
 		self.Draw = duit.Dirty
+	} else if m.Buttons == 16 {
+		s.View.Scroll += 5
+		self.Draw = duit.Dirty
+	} else {
+		// Trigger a redraw after releasing a mouse button.
+		if s.View.Rotate || s.View.Pan {
+			self.Draw = duit.Dirty
+		}
+		s.View.MouseRotate(x, y, false)
+		s.View.MousePan(x, y, false)
 	}
-
-	// TODO: mouse events for zoom and pan.
-	// TODO: we cannot use the shift key or other modifiers in combination with mouse movements.
-	// It is not present in duit.
-	// We have to use another key and detect key press individually from mouse events.
 
 	return r
 }
 
 func (s *Scene) Key(dui *duit.DUI, self *duit.Kid, k rune, m duitdraw.Mouse, orig image.Point) (r duit.Result) {
-	fmt.Println("Key", k, duitdraw.KeyLeft, duitdraw.KeyRight, duitdraw.KeyDown, duitdraw.KeyUp)
-
+	if k >= '1' && k <= '7' {
+		s.View.Translation = Vector{}
+		s.View.Scroll = 0
+	}
 	switch k {
+	case '1':
+		s.View.Rotation = Identity()
+	case '2':
+		s.View.Rotation = Identity().Rotate(V(0, 0, 1), math.Pi/2)
+	case '3':
+		s.View.Rotation = Identity().Rotate(V(0, 0, 1), math.Pi)
+	case '4':
+		s.View.Rotation = Identity().Rotate(V(0, 0, 1), -math.Pi/2)
+	case '5':
+		s.View.Rotation = Identity().Rotate(V(1, 0, 0), math.Pi/2)
+	case '6':
+		s.View.Rotation = Identity().Rotate(V(1, 0, 0), -math.Pi/2)
+	case '7':
+		s.View.Rotation = Identity().Rotate(V(1, 1, 0).Normalize(), -math.Pi/4).Rotate(V(0, 0, 1), math.Pi/4)
 	case duitdraw.KeyLeft:
-		s.Pan(-0.1, 0)
+		s.View.KeyRotate(1, 0)
 	case duitdraw.KeyRight:
-		s.Pan(0.1, 0)
+		s.View.KeyRotate(-1, 0)
 	case duitdraw.KeyUp:
-		s.Pan(0, -0.1)
+		s.View.KeyRotate(0, 1)
 	case duitdraw.KeyDown:
-		s.Pan(0, 0.1)
-	case 'j':
-		s.Rotate(0.01, 0)
-	case 'l':
-		s.Rotate(-0.01, 0)
-	case 'i':
-		s.Rotate(0, 0.02)
-	case 'm':
-		s.Rotate(0, -0.02)
+		s.View.KeyRotate(0, -1)
+	case duitdraw.KeyPageUp:
+		s.View.Scroll -= 5
+	case duitdraw.KeyPageDown:
+		s.View.Scroll += 5
 	default:
-		fmt.Println(string([]rune{k}))
 		return
 	}
 	self.Draw = duit.Dirty
@@ -75,12 +84,10 @@ func (s *Scene) Key(dui *duit.DUI, self *duit.Kid, k rune, m duitdraw.Mouse, ori
 }
 
 func (s *Scene) FirstFocus(dui *duit.DUI, self *duit.Kid) (warp *image.Point) {
-	fmt.Println("FirstFocus")
 	return nil
 }
 
 func (s *Scene) Focus(dui *duit.DUI, self *duit.Kid, o duit.UI) (warp *image.Point) {
-	fmt.Println("Focus")
 	if s != o {
 		return nil
 	}
@@ -88,11 +95,9 @@ func (s *Scene) Focus(dui *duit.DUI, self *duit.Kid, o duit.UI) (warp *image.Poi
 }
 
 func (s *Scene) Mark(self *duit.Kid, o duit.UI, forLayout bool) (marked bool) {
-	fmt.Println("Mark")
 	return self.Mark(o, forLayout)
 }
 
 func (s *Scene) Print(self *duit.Kid, indent int) {
-	fmt.Println("Print")
 	duit.PrintUI("Scene", self, indent)
 }

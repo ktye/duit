@@ -1,22 +1,31 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
+	"github.com/fogleman/fauxgl"
 	"github.com/ktye/duit"
 	"github.com/ktye/duit/scene"
 )
 
 func main() {
 
-	view := scene.View{
-		Eye:    scene.V(-1, -2, 2),
-		Center: scene.V(0, 0, 0),
-		Up:     scene.V(0, 0, 1),
-		Near:   1,
-		Far:    50,
-		Fovy:   20,
+	if len(os.Args) == 2 {
+		loadmesh(os.Args[1])
+	} else {
+		loadmesh("fauxgl/examples/hello.stl")
 	}
+
+	view := scene.NewView()
+	//view.Eye = scene.V(-1, -2, 2)
+	view.Eye = scene.V(-2, -2, 0)
+	view.Up = scene.V(0, 0, 1)
+	view.Near = 1
+	view.Far = 50
+	view.Fovy = 20
 
 	dui, err := duit.NewDUI("", nil)
 	if err != nil {
@@ -40,4 +49,17 @@ func main() {
 			log.Print(err)
 		}
 	}
+}
+
+// Load the file from $GOPATH/src/github.com/fogleman/$file.
+func loadmesh(file string) {
+	p := filepath.Join(os.Getenv("GOPATH"), "src/github.com/fogleman", file)
+	if m, err := fauxgl.LoadSTL(p); err != nil {
+		fmt.Println("could not load file from: ", p)
+		panic(err)
+	} else {
+		mesh = m
+	}
+	mesh.BiUnitCube()
+	mesh.SmoothNormalsThreshold(fauxgl.Radians(30))
 }

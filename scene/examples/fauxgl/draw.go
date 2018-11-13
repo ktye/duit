@@ -9,10 +9,6 @@ import (
 	"github.com/ktye/duitdraw"
 )
 
-// Draw stores the redraw function.
-// It is typed to draw, which implements a scene.SceneDrawer.
-//var Draw draw = redraw
-
 // Draw implements a scene.SceneDrawer.
 // It has the same signature as the redraw function, which is converted to a SceneDrawer by type casting.
 type draw func(im *duitdraw.Image, mat fauxgl.Matrix, eye fauxgl.Vector)
@@ -25,13 +21,7 @@ var mesh *fauxgl.Mesh
 
 func redraw(im *duitdraw.Image, matrix fauxgl.Matrix, eye fauxgl.Vector) {
 	if mesh == nil {
-		if m, err := fauxgl.LoadSTL("hello.stl"); err != nil {
-			panic(err)
-		} else {
-			mesh = m
-		}
-		mesh.BiUnitCube()
-		mesh.SmoothNormalsThreshold(fauxgl.Radians(30))
+
 	}
 	width, height := im.R.Dx(), im.R.Dy()
 
