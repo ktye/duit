@@ -4,33 +4,30 @@ import (
 	"image"
 	imdraw "image/draw"
 
-	"unsafe"
-
 	"github.com/fogleman/gg"
 	"github.com/fogleman/ln/ln"
 	"github.com/ktye/duit/scene"
 	"github.com/ktye/duitdraw"
 )
 
-type draw func(im *duitdraw.Image, matrix ln.Matrix, eye ln.Vector, width, height float64)
+type draw func(im *duitdraw.Image, eye, center, up ln.Vector, fovy, near, far, width, height float64)
 
 func (d draw) DrawScene(im *duitdraw.Image, view scene.View) {
 	eye := ln.Vector(view.Eye)
+	center := ln.Vector(view.Center)
+	up := ln.Vector(view.Up)
+	fovy := view.Fovy
+	near, far := view.Near, view.Far
+	width, height := view.Width, view.Height
 
-	// ln.Matrix elements are not exported.
-	// We need to set it from a scene.Matrix.
-	mat := view.Matrix()
-	var m ln.Matrix = *(*ln.Matrix)(unsafe.Pointer(&mat))
-
-	w, h := view.Width, view.Height
-	d(im, m, eye, w, h)
+	d(im, eye, center, up, fovy, near, far, width, height)
 }
 
-func render(im *duitdraw.Image, matrix ln.Matrix, eye ln.Vector, width, height float64) {
+func render(im *duitdraw.Image, eye, center, up ln.Vector, fovy, near, far, width, height float64) {
 	scene := ln.Scene{}
 	scene.Add(ln.NewCube(ln.Vector{0, 0, 0}, ln.Vector{1, 1, 1}))
 	scene.Add(ln.NewCube(ln.Vector{-0.5, -0.5, -0.5}, ln.Vector{0, 0, 0}))
-	paths := scene.RenderWithMatrix(matrix, eye, width, height, 0.01)
+	paths := scene.Render(eye, center, up, width, height, fovy, near, far, 0.01)
 	img := pathsToImage(paths, width, height)
 	im.DrawImage(im.R, img, image.ZP, imdraw.Src)
 }

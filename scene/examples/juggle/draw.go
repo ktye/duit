@@ -18,7 +18,7 @@ func (d draw) DrawScene(im *duitdraw.Image, v scene.View) {
 	d(im, fauxgl.Matrix(m), fauxgl.Vector(v.Eye))
 }
 
-var mesh *fauxgl.Mesh
+var mesh [3]*fauxgl.Mesh
 
 func redraw(im *duitdraw.Image, matrix fauxgl.Matrix, eye fauxgl.Vector) {
 	width, height := im.R.Dx(), im.R.Dy()
@@ -30,12 +30,28 @@ func redraw(im *duitdraw.Image, matrix fauxgl.Matrix, eye fauxgl.Vector) {
 	context.ClearColorBuffer()
 
 	light := fauxgl.V(-2, 0, 1).Normalize()
-	color := fauxgl.Color{0.5, 1, 0.65, 1}
+	colors := []fauxgl.Color{
+		{0.5, 1, 0.65, 1},
+		{1, 0.4, 0.5, 1},
+		{0.3, 0.2, 1, 1},
+	}
 
-	shader := fauxgl.NewPhongShader(matrix, light, eye)
-	shader.ObjectColor = color
-	context.Shader = shader
-	context.DrawMesh(mesh)
+	for i, m := range mesh {
+		m.MoveTo(fauxgl.V(float64(i), 0, 0), fauxgl.V(1, 1, 1))
+		shader := fauxgl.NewPhongShader(matrix, light, eye)
+		shader.ObjectColor = colors[i]
+		context.Shader = shader
+		context.DrawMesh(m)
+	}
 
 	im.DrawImage(im.R, context.Image(), image.ZP, imdraw.Src)
+}
+
+func position(t float64) (float64, float64) {
+	// Position in the air.
+	W, H := 1.0, 1.0
+	x := W * t / 2
+	y := 2*H*t - H*t*t
+	// TODO...
+	return x, y
 }

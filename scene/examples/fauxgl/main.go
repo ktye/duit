@@ -20,12 +20,6 @@ func main() {
 	}
 
 	view := scene.NewView()
-	//view.Eye = scene.V(-1, -2, 2)
-	view.Eye = scene.V(-2, -2, 0)
-	view.Up = scene.V(0, 0, 1)
-	view.Near = 1
-	view.Far = 50
-	view.Fovy = 20
 
 	dui, err := duit.NewDUI("", nil)
 	if err != nil {

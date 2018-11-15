@@ -22,60 +22,56 @@ func (s *Scene) Draw(dui *duit.DUI, self *duit.Kid, img *duitdraw.Image, orig im
 
 func (s *Scene) Mouse(dui *duit.DUI, self *duit.Kid, m duitdraw.Mouse, origM duitdraw.Mouse, orig image.Point) (r duit.Result) {
 	x, y := float64(m.Point.X), float64(m.Point.Y)
-	if m.Buttons == 1 {
-		s.View.MouseRotate(x, y, true)
-	} else if m.Buttons == 4 {
-		s.View.MousePan(x, y, true)
-	} else if m.Buttons == 8 {
-		s.View.Scroll -= 5
+	if m.Buttons == 8 {
+		s.View.Zoom(1 / 1.1)
 		self.Draw = duit.Dirty
 	} else if m.Buttons == 16 {
-		s.View.Scroll += 5
+		s.View.Zoom(1.1)
 		self.Draw = duit.Dirty
-	} else {
-		// Trigger a redraw after releasing a mouse button.
-		if s.View.Rotate || s.View.Pan {
+	} else if m.Buttons == 1 {
+		if s.rotating == false {
+			s.startX = x
+			s.startY = y
+			s.rotating = true
+		}
+	} else if m.Buttons == 0 {
+		if s.rotating {
+			s.rotating = false
+			dx := (x - s.startX) / s.View.Width
+			dy := (y - s.startY) / s.View.Height
+			s.View.Rotate(dx, dy)
 			self.Draw = duit.Dirty
 		}
-		s.View.MouseRotate(x, y, false)
-		s.View.MousePan(x, y, false)
 	}
-
 	return r
 }
 
 func (s *Scene) Key(dui *duit.DUI, self *duit.Kid, k rune, m duitdraw.Mouse, orig image.Point) (r duit.Result) {
-	if k >= '1' && k <= '7' {
-		s.View.Translation = Vector{}
-		s.View.Scroll = 0
-	}
 	switch k {
-	case '1':
-		s.View.Rotation = Identity()
-	case '2':
-		s.View.Rotation = Identity().Rotate(V(0, 0, 1), math.Pi/2)
-	case '3':
-		s.View.Rotation = Identity().Rotate(V(0, 0, 1), math.Pi)
-	case '4':
-		s.View.Rotation = Identity().Rotate(V(0, 0, 1), -math.Pi/2)
-	case '5':
-		s.View.Rotation = Identity().Rotate(V(1, 0, 0), math.Pi/2)
-	case '6':
-		s.View.Rotation = Identity().Rotate(V(1, 0, 0), -math.Pi/2)
-	case '7':
-		s.View.Rotation = Identity().Rotate(V(1, 1, 0).Normalize(), -math.Pi/4).Rotate(V(0, 0, 1), math.Pi/4)
+	case '1', '2', '3', '4', '5', '6', '7', '8':
+		x := k - '1'
+		e1, e2 := s.Up.Perpendicular(), s.Up.Perpendicular().Cross(s.Up)
+		views := []Vector{e1, e2, e1.Negate(), e2.Negate(), e1.Add(e2), e2.Sub(e1), e1.Add(e2).Negate(), e1.Sub(e2)}
+		dist := s.Center.Sub(s.Eye).Length()
+		if x < 4 {
+			s.Eye = views[x].MulScalar(dist)
+		} else {
+			s.Eye = views[x].Add(s.Up).MulScalar(dist / math.Sqrt(3))
+		}
+	case 'x':
+		s.Up = V(1, 0, 0)
+	case 'y':
+		s.Up = V(0, 1, 0)
+	case 'z':
+		s.Up = V(0, 0, 1)
 	case duitdraw.KeyLeft:
-		s.View.KeyRotate(1, 0)
+		s.Rotate(-0.05, 0)
 	case duitdraw.KeyRight:
-		s.View.KeyRotate(-1, 0)
+		s.View.Rotate(0.05, 0)
 	case duitdraw.KeyUp:
-		s.View.KeyRotate(0, 1)
+		s.View.Rotate(0, -0.05)
 	case duitdraw.KeyDown:
-		s.View.KeyRotate(0, -1)
-	case duitdraw.KeyPageUp:
-		s.View.Scroll -= 5
-	case duitdraw.KeyPageDown:
-		s.View.Scroll += 5
+		s.View.Rotate(0, 0.05)
 	default:
 		return
 	}
@@ -99,5 +95,4 @@ func (s *Scene) Mark(self *duit.Kid, o duit.UI, forLayout bool) (marked bool) {
 }
 
 func (s *Scene) Print(self *duit.Kid, indent int) {
-	duit.PrintUI("Scene", self, indent)
 }
